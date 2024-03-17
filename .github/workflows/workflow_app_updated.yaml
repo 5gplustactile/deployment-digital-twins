@@ -13,14 +13,16 @@ jobs:
         runs-on: self-hosted
         steps:
         - name: pulling 5gplustactile/deployment-digital-twins repository
+          if: github.event.pull_request.merged == true
           uses: actions/checkout@v3
           with:
             repository: '5gplustactile/deployment-digital-twins'
-            ref: ${{ github.head_ref }}
+            ref: main
             fetch-depth: 0
             token: ${{ secrets.ACCESS_TOKEN }}
 
         - name: Installing dependencies
+          if: github.event.pull_request.merged == true
           env:
             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           run: |
@@ -42,6 +44,7 @@ jobs:
            rm argocd-linux-amd64
 
         - name: Get branch name - filtered
+          if: github.event.pull_request.merged == true
           id: get_branch
           run: |
             if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
@@ -51,6 +54,7 @@ jobs:
             fi
 
         - name: Use branch name - filtered
+          if: github.event.pull_request.merged == true
           run: |
             BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
             echo "BRANCH_DT=$(echo $BRANCH_NAME | cut -d/ -f2)" >> $GITHUB_ENV
@@ -60,12 +64,14 @@ jobs:
             echo 'The branch name is' ${{ env.BRANCH_DT }}
 
         - name: argocd - updating application
+          if: github.event.pull_request.merged == true
           run: |
            argocd login --username admin --password ${{ secrets.ARGOCD_PASSWORD }}  ${{ secrets.ARGOCD_HOSTNAME }} --insecure
            yq eval '.spec.syncPolicy.automated = {} | .spec.source.targetRevision = "main"' ${{ env.BRANCH_DT }}/main.yaml -i
            cat ${{ env.BRANCH_DT }}/main.yaml
 
         - name: commit changes in 5gplustactile/digital-twins repository
+          if: github.event.pull_request.merged == true
           env:
             CI_COMMIT_MESSAGE: updation digital twins app in main version
           run: |
@@ -75,6 +81,7 @@ jobs:
            git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}" --allow-empty
 
         - name: push changes in 5gplustactile/deployment-digital-twins repository
+          if: github.event.pull_request.merged == true
           uses: ad-m/github-push-action@master
           with:
             branch: main
