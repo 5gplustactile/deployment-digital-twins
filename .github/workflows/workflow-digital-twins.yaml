@@ -12,8 +12,8 @@ on:
         required: true
             
 jobs:
-    creating_digital_tiwns:
-        name: creating_digital_tiwns
+    digital_tiwns:
+        name: digital_twins
         runs-on: self-hosted
         steps:
         - name: pulling deployment-digital-twins repository

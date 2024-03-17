@@ -10,7 +10,7 @@ on:
           required: true
 
 jobs:
-    updating_digital_twins:
+  digital_twins_main_version:
         name: updating_digital_twins_main_version
         runs-on: self-hosted
         steps:
