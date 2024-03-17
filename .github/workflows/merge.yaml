@@ -10,7 +10,7 @@ on:
 jobs:
     creating:
         if: github.event.pull_request.merged == true
-        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow_app_updated.yamll@main
+        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow_app_updated.yaml@main
         secrets:
             ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
             ARGOCD_PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}

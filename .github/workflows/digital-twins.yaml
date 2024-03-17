@@ -6,7 +6,7 @@ on:
 
 jobs:
     creating:
-        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-digital-twins.yamll@main
+        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-digital-twins.yaml@main
         secrets:
             ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
             GIT_REPO: ${{ secrets.GIT_REPO }}
