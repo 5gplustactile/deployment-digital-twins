@@ -1,4 +1,4 @@
-name: wofkflow_digital_tiwns
+name: wofkflow_digital_twins
 on:
     push:
       branches:
