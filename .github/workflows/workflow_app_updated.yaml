@@ -9,7 +9,7 @@ on:
 
 jobs:
     updating_digital_twins:
-        name: Updating Digital Twins in main version
+        name: updating_digital_twins_main_version
         runs-on: self-hosted
         steps:
         - name: pulling 5gplustactile/deployment-digita-twins repository
@@ -19,6 +19,7 @@ jobs:
             ref: ${{ github.head_ref }}
             fetch-depth: 0
             token: ${{ secrets.ACCESS_TOKEN }}
+
         - name: Installing dependencies
           env:
             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
@@ -63,4 +64,19 @@ jobs:
            argocd login --username admin --password ${{ secrets.ARGOCD_PASSWORD }}  ${{ secrets.ARGOCD_HOSTNAME }} --insecure
            yq eval '.spec.syncPolicy.automated = {} | .spec.source.targetRevision = "main"' ${{ env.BRANCH_DT }}/main.yaml -i
            cat ${{ env.BRANCH_DT }}/main.yaml
-           argocd app create -f ${{ env.BRANCH_DT }}/main.yaml --upsert
+
+        - name: commit changes in 5gplustactile/digital-twins repository
+          env:
+            CI_COMMIT_MESSAGE: updation digital twins app in main version
+          run: |
+           git config --local user.email "action@github.com"
+           git config --local user.name "GitHub Action"  
+           git add .
+           git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}" --allow-empty
+
+        - name: push changes in 5gplustactile/iac repository
+          uses: ad-m/github-push-action@master
+          with:
+            branch: main
+            repository: '5gplustactile/digital-twins'
+            github_token: ${{ secrets.ACCESS_TOKEN }}
