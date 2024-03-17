@@ -5,7 +5,7 @@ on:
         - 'dt/**'
 jobs:
     creating_digital_tiwns:
-        name: Creating Digital Twins
+        name: creating_digital_tiwns
         runs-on: self-hosted
         steps:
         - name: pulling deployment-digital-twins repository
