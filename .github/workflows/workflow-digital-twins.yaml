@@ -12,7 +12,7 @@ on:
         required: true
             
 jobs:
-    creating_digital_tiwns:
+    digital_tiwns:
         name: creating_digital_tiwns
         runs-on: self-hosted
         steps:

@@ -8,7 +8,7 @@ on:
         - closed
 
 jobs:
-    creating:
+    updating:
         if: github.event.pull_request.merged == true
         uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow_app_updated.yaml@main
         secrets:
