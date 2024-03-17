@@ -40,6 +40,15 @@ jobs:
            # delete package
            rm argocd-linux-amd64
 
+        - name: Get branch name - filtered
+          id: get_branch
+          run: |
+            if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+              echo "::set-output name=branch::${{ github.event.pull_request.head.ref }}"
+            else
+              echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+            fi
+
         - name: Use branch name - filtered
           run: |
             BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
