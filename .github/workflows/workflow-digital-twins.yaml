@@ -1,8 +1,16 @@
 name: workflow_digital_twins
 on:
-  push:
-    branches:
-        - 'dt/**'
+  workflow_call:
+    secrets:
+      ACCESS_TOKEN:
+        required: true
+      GIT_REPO:
+        required: true
+      ARGOCD_PASSWORD:
+        required: true
+      ARGOCD_HOSTNAME:
+        required: true
+            
 jobs:
     creating_digital_tiwns:
         name: creating_digital_tiwns

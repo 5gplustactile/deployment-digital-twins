@@ -1,11 +1,13 @@
-name: wofkflow_app
+name: digital_twins
 on:
-    push:
-      branches:
-          - 'main'
-    pull_request_target:
-      types:
-        - closed
+  workflow_call:
+    secrets:
+        ACCESS_TOKEN:
+          required: true
+        ARGOCD_HOSTNAME:
+          required: true
+        ARGOCD_PASSWORD:
+          required: true
 
 jobs:
     updating_digital_twins:

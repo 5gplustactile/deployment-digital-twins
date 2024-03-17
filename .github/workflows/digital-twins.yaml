@@ -1,0 +1,15 @@
+name: wofkflow_digital_tiwns
+on:
+    push:
+      branches:
+          - 'dt/**'
+
+jobs:
+    creating:
+        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-digital-twins.yamll@main
+        secrets:
+            ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+            GIT_REPO: ${{ secrets.GIT_REPO }}
+            ARGOCD_PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}
+            ARGOCD_HOSTNAME: ${{ secrets.ARGOCD_HOSTNAME }} 
+
