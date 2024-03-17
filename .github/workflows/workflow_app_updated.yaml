@@ -11,7 +11,7 @@ on:
 
 jobs:
   digital_twins_main_version:
-        name: updating_digital_twins_main_version
+        name: digital_twins_main_version
         runs-on: self-hosted
         steps:
         - name: pulling 5gplustactile/deployment-digital-twins repository     
