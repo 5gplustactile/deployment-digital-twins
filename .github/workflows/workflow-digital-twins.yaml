@@ -1,0 +1,102 @@
+name: workflow_digital_twins
+on:
+  push:
+    branches:
+        - 'dt/**'
+jobs:
+    creating_digital_tiwns:
+        name: Creating Digital Twins
+        runs-on: self-hosted
+        steps:
+        - name: pulling deployment-digital-twins repository
+          uses: actions/checkout@v3
+          with:
+            repository: '5gplustactile/deployment-digital-twins'
+            ref: ${{ github.head_ref }}
+            fetch-depth: 0
+            token: ${{ secrets.ACCESS_TOKEN }}
+
+        # extract branch name
+        - name: Extract branch name
+          shell: bash
+          run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+          id: extract_branch
+
+        - name: Get branch name
+          run: echo 'The branch name is' ${{ steps.extract_branch.outputs.branch }}
+
+        - name: Get branch name - filtered
+          id: get_branch
+          run: |
+            if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+              echo "::set-output name=branch::${{ github.event.pull_request.head.ref }}"
+            else
+              echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+            fi
+
+        - name: Use branch name - filtered
+          run: |
+            BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
+            echo "BRANCH_DT=$(echo $BRANCH_NAME | cut -d/ -f2)" >> $GITHUB_ENV
+
+        - name: Get branch name
+          run: |
+            echo 'The branch name is' ${{ env.BRANCH_DT }}
+
+        - name: Installing dependencies
+          env:
+            GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+           echo "### install yq ###"
+           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+           sudo chmod a+x /usr/local/bin/yq
+           yq --version
+
+           echo "### install jq ###"
+           sudo apt install jq -y
+           jq --version
+
+           echo "## install gh ###"
+           type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+           curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+           && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+           && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+           && sudo apt update \
+           && sudo apt install gh -y
+
+           echo "### argocd ###"
+           # download
+           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+           # install
+           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+           # delete package
+           rm argocd-linux-amd64
+
+        - name: argocd - creating application
+          run: |
+           argocd login --username admin --password ${{ secrets.ARGOCD_PASSWORD }}  ${{ secrets.ARGOCD_HOSTNAME }} --insecure
+           yq eval '.spec.syncPolicy.automated = null | .spec.source.targetRevision = "${{ steps.extract_branch.outputs.branch }}"' ${{ env.BRANCH_DT }}/main.yaml -i
+           cat ${{ env.BRANCH_DT }}/main.yaml
+           argocd app create -f ${{ env.BRANCH_DT }}/main.yaml --upsert
+
+        - name: create Pull Request
+          env:
+            TARGET_BRANCH: main
+            TITLE: "Creating digital twins"
+            BODY: "Created by GitHub Actions"
+            REVIEWER: "andresanaya21"
+            ASSIGNED: "andresanaya21"
+            GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+            #!/bin/bash          
+            while :
+              do
+                 if gh pr create -B ${{ env.TARGET_BRANCH }} -H ${{ steps.extract_branch.outputs.branch }} --title '${{ env.TITLE }}' --body '${{ env.BODY }}' \
+                 --reviewer "${{ env.REVIEWER }}" --assignee ${{ env.ASSIGNED }} 2>/dev/null; then
+                    echo "pull request created"
+                    exit 0;
+                  else
+                    echo "skipping"
+                    exit 0;
+                 fi
+              done

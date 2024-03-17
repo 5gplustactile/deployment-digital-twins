@@ -1,0 +1,10 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+ name: deployment-digital-twins
+ namespace: actions-runner-system
+spec:
+ replicas: 3
+ template:
+   spec:
+     repository: 5gplustactile/deployment-digital-twins

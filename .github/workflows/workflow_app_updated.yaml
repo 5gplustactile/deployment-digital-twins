@@ -1,0 +1,57 @@
+name: wofkflow_app
+on:
+    push:
+      branches:
+          - 'main'
+    pull_request_target:
+      types:
+        - closed
+
+jobs:
+    updating_digital_twins:
+        name: Updating Digital Twins in main version
+        runs-on: self-hosted
+        steps:
+        - name: pulling 5gplustactile/deployment-digita-twins repository
+          uses: actions/checkout@v3
+          with:
+            repository: '5gplustactile/deployment-digital-twins'
+            ref: ${{ github.head_ref }}
+            fetch-depth: 0
+            token: ${{ secrets.ACCESS_TOKEN }}
+        - name: Installing dependencies
+          env:
+            GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+           echo "### install yq ###"
+           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+           sudo chmod a+x /usr/local/bin/yq
+           yq --version
+
+           echo "### install jq ###"
+           sudo apt install jq -y
+           jq --version
+
+           echo "### argocd ###"
+           # download
+           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+           # install
+           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+           # delete package
+           rm argocd-linux-amd64
+
+        - name: Use branch name - filtered
+          run: |
+            BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
+            echo "BRANCH_DT=$(echo $BRANCH_NAME | cut -d/ -f2)" >> $GITHUB_ENV
+
+        - name: Get branch name
+          run: |
+            echo 'The branch name is' ${{ env.BRANCH_DT }}
+
+        - name: argocd - updating application
+          run: |
+           argocd login --username admin --password ${{ secrets.ARGOCD_PASSWORD }}  ${{ secrets.ARGOCD_HOSTNAME }} --insecure
+           yq eval '.spec.syncPolicy.automated = {} | .spec.source.targetRevision = "main"' ${{ env.BRANCH_DT }}/main.yaml -i
+           cat ${{ env.BRANCH_DT }}/main.yaml
+           argocd app create -f ${{ env.BRANCH_DT }}/main.yaml --upsert
