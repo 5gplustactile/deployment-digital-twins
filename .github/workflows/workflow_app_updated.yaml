@@ -12,7 +12,7 @@ jobs:
         name: updating_digital_twins_main_version
         runs-on: self-hosted
         steps:
-        - name: pulling 5gplustactile/deployment-digita-twins repository
+        - name: pulling 5gplustactile/deployment-digital-twins repository
           uses: actions/checkout@v3
           with:
             repository: '5gplustactile/deployment-digital-twins'
@@ -74,9 +74,9 @@ jobs:
            git add .
            git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}" --allow-empty
 
-        - name: push changes in 5gplustactile/iac repository
+        - name: push changes in 5gplustactile/deployment-digital-twins repository
           uses: ad-m/github-push-action@master
           with:
             branch: main
-            repository: '5gplustactile/digital-twins'
+            repository: '5gplustactile/deployment-digital-twins'
             github_token: ${{ secrets.ACCESS_TOKEN }}
