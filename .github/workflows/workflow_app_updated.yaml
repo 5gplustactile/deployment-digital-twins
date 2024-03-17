@@ -9,7 +9,7 @@ on:
 
 jobs:
     updating_digital_twins:
-        name: Updating Digital Twins in main version
+        name: updating_digital_twins_main_version
         runs-on: self-hosted
         steps:
         - name: pulling 5gplustactile/deployment-digita-twins repository
