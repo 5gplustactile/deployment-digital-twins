@@ -42,3 +42,8 @@
 #    syncOptions:
 #      - CreateNamespace=true
 #      - ApplyOutOfSyncOnly=true
+spec:
+  syncPolicy:
+    automated: {}
+  source:
+    targetRevision: main
