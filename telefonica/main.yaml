@@ -1,44 +1,44 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: open5gs
-  namespace: argocd
-spec:
-  project: digital-twins
-  source:
-    repoURL: 'https://github.com/5gplustactile/deployment-digital-twins.git'
-    targetRevision: main
-    path: digital-twins/demo/open5gs
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: 'https://internal-uwuya05e9h8u2oi4fq78z433zrqn-k8s-896455334.eu-west-3.elb.amazonaws.com:6443'
-    namespace: open5gs
-  syncPolicy:
-    automated: {}
-    syncOptions:
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: whoami
-  namespace: argocd
-spec:
-  project: digital-twins
-  source:
-    repoURL: 'https://github.com/5gplustactile/deployment-digital-twins.git'
-    targetRevision: main
-    path: digital-twins/demo/whoami/overlays
-    kustomize:
-      namePrefix: whoami
-  destination:
-    server: 'https://internal-uwuya05e9h8u2oi4fq78z433zrqn-k8s-896455334.eu-west-3.elb.amazonaws.com:6443'
-    namespace: whoami
-  syncPolicy:
-    automated: {}
-    syncOptions:
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
+#apiVersion: argoproj.io/v1alpha1
+#kind: Application
+#metadata:
+#  name: open5gs
+#  namespace: argocd
+#spec:
+#  project: digital-twins
+#  source:
+#    repoURL: 'https://github.com/5gplustactile/deployment-digital-twins.git'
+#    targetRevision: main
+#    path: digital-twins/demo/open5gs
+#    helm:
+#      valueFiles:
+#        - values.yaml
+#  destination:
+#    server: 'https://internal-uwuya05e9h8u2oi4fq78z433zrqn-k8s-896455334.eu-west-3.elb.amazonaws.com:6443'
+#    namespace: open5gs
+#  syncPolicy:
+#    automated: {}
+#    syncOptions:
+#      - CreateNamespace=true
+#      - ApplyOutOfSyncOnly=true
+#---
+#apiVersion: argoproj.io/v1alpha1
+#kind: Application
+#metadata:
+#  name: whoami
+#  namespace: argocd
+#spec:
+#  project: digital-twins
+#  source:
+#    repoURL: 'https://github.com/5gplustactile/deployment-digital-twins.git'
+#    targetRevision: main
+#    path: digital-twins/demo/whoami/overlays
+#    kustomize:
+#      namePrefix: whoami
+#  destination:
+#    server: 'https://internal-uwuya05e9h8u2oi4fq78z433zrqn-k8s-896455334.eu-west-3.elb.amazonaws.com:6443'
+#    namespace: whoami
+#  syncPolicy:
+#    automated: {}
+#    syncOptions:
+#      - CreateNamespace=true
+#      - ApplyOutOfSyncOnly=true
