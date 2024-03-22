@@ -43,42 +43,42 @@ jobs:
            # delete package
            rm argocd-linux-amd64
 
-        - name: Get branch name - filtered
-          id: get_branch
-          run: |
-            if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
-              echo "::set-output name=branch::${{ github.event.pull_request.head.ref }}"
-            else
-              echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
-            fi
+#        - name: Get branch name - filtered
+#          id: get_branch
+#          run: |
+#            if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+#              echo "::set-output name=branch::${{ github.event.pull_request.head.ref }}"
+#            else
+#              echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+#            fi
 
-        - name: Use branch name - filtered
-          run: |
-            BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
-            echo "BRANCH_DT=$(echo $BRANCH_NAME | cut -d/ -f2)" >> $GITHUB_ENV
+#        - name: Use branch name - filtered
+#          run: |
+#            BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
+#            echo "BRANCH_DT=$(echo $BRANCH_NAME | cut -d/ -f2)" >> $GITHUB_ENV#
 
-        - name: Get branch name
-          run: |
-            echo 'The branch name is' ${{ env.BRANCH_DT }}
+#        - name: Get branch name
+#          run: |
+#            echo 'The branch name is' ${{ env.BRANCH_DT }}#
 
-        - name: argocd - updating application
-          run: |
-           argocd login --username admin --password ${{ secrets.ARGOCD_PASSWORD }}  ${{ secrets.ARGOCD_HOSTNAME }} --insecure
-           yq eval '.spec.syncPolicy.automated = {} | .spec.source.targetRevision = "main"' ${{ env.BRANCH_DT }}/main.yaml -i
-           cat ${{ env.BRANCH_DT }}/main.yaml
+#        - name: argocd - updating application
+#          run: |
+#           argocd login --username admin --password ${{ secrets.ARGOCD_PASSWORD }}  ${{ secrets.ARGOCD_HOSTNAME }} --insecure
+#           yq eval '.spec.syncPolicy.automated = {} | .spec.source.targetRevision = "main"' ${{ env.BRANCH_DT }}/main.yaml -i
+#           cat ${{ env.BRANCH_DT }}/main.yaml#
 
-        - name: commit changes in 5gplustactile/digital-twins repository
-          env:
-            CI_COMMIT_MESSAGE: updation digital twins app in main version
-          run: |
-           git config --local user.email "action@github.com"
-           git config --local user.name "GitHub Action"  
-           git add .
-           git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}" --allow-empty
+#        - name: commit changes in 5gplustactile/digital-twins repository
+#          env:
+#            CI_COMMIT_MESSAGE: updation digital twins app in main version
+#          run: |
+#           git config --local user.email "action@github.com"
+#           git config --local user.name "GitHub Action"  
+#           git add .
+#           git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}" --allow-empty#
 
-        - name: push changes in 5gplustactile/deployment-digital-twins repository   
-          uses: ad-m/github-push-action@master
-          with:
-            branch: main
-            repository: '5gplustactile/deployment-digital-twins'
-            github_token: ${{ secrets.ACCESS_TOKEN }}
+#        - name: push changes in 5gplustactile/deployment-digital-twins repository   
+#          uses: ad-m/github-push-action@master
+#          with:
+#            branch: main
+#            repository: '5gplustactile/deployment-digital-twins'
+#            github_token: ${{ secrets.ACCESS_TOKEN }}
