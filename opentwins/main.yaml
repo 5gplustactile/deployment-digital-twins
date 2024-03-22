@@ -7,16 +7,12 @@ spec:
   project: digital-twins
   source:
     repoURL: 'https://ertis-research.github.io/Helm-charts/'
-    targetRevision: 0.5.11
+    targetRevision: main
     path: ''
     helm:
       valueFiles:
         - values.yaml
-      values: |
-        persistentVolumes:
-          grafana: true
-          hono: true
-          influxdb2: true        
+      values: "persistentVolumes:\n  grafana: true\n  hono: true\n  influxdb2: true        \n"
   destination:
     server: 'https://internal-kx7x60bjvby2tvc0r53vvci12514-k8s-663204783.eu-west-3.elb.amazonaws.com:6443'
     namespace: opentwins
