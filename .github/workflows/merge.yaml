@@ -1,18 +1,18 @@
-name: wofkflow_merge
-on:
-    push:
-      branches:
-          - 'main'
-    pull_request_target:
-      types:
-        - closed
-
-jobs:
-    creating:
-        if: github.event.pull_request.merged == true
-        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow_app_updated.yaml@main
-        secrets:
-            ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-            ARGOCD_PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}
-            ARGOCD_HOSTNAME: ${{ secrets.ARGOCD_HOSTNAME }} 
+#name: wofkflow_merge
+#on:
+#    push:
+#      branches:
+#          - 'main'
+#    pull_request_target:
+#      types:
+#        - closed
+#
+#jobs:
+#    creating:
+#        if: github.event.pull_request.merged == true
+#        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow_app_updated.yaml@main
+#        secrets:
+#            ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+#            ARGOCD_PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}
+#            ARGOCD_HOSTNAME: ${{ secrets.ARGOCD_HOSTNAME }} 
 
