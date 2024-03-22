@@ -7,7 +7,7 @@ spec:
   project: digital-twins
   source:
     repoURL: 'https://ertis-research.github.io/Helm-charts/'
-    targetRevision: main
+    targetRevision: 0.5.11
     path: ''
     helm:
       valueFiles:
