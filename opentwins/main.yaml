@@ -9,6 +9,7 @@ spec:
     repoURL: 'https://ertis-research.github.io/Helm-charts/'
     targetRevision: 0.5.11
     path: ''
+    chart: OpenTwins
     helm:
       valueFiles:
         - values.yaml
