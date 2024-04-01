@@ -24,6 +24,6 @@ This repo is aimed to create digital twins as code
 3. Merge the changes into main. A new pipeline will be triggered
    to adapt the argocd app (```main.yaml```) to the enviroment.
 
-4. Go to the ArgoCd GUI, filter with digital-twins project and
+4. Goes to the ArgoCd GUI, filter with digital-twins project and
    see the objects created.
     
