@@ -71,7 +71,7 @@ jobs:
 
             echo "#### helm template ###"
             helm repo add $name $repoURL 
-            helm template $name $name/$chart --version $targetRevision --namespace $name | tee /tmp/k8s-$name-main.yaml > /dev/null
+            helm template $name $name/$chart --version $targetRevision --namespace $name | tee /tmp/k8s-${{ env.NAME_DIGITAL_TWINS }}-main.yaml > /dev/null
 
         - name: Run Terrascan - ${{ env.NAME_DIGITAL_TWINS }}
           id: terrascan_edge
