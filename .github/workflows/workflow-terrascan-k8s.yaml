@@ -1,0 +1,81 @@
+name: terrascan vulnerabilities
+on:
+  workflow_call:
+    secrets:
+      ACCESS_TOKEN:
+        required: true
+
+jobs:
+    terrascan_k8s:
+        name: terrascan_k8s
+        runs-on: self-hosted
+        steps:
+        - name: pulling repo 5gplustactile/deployment-digital-twins
+          uses: actions/checkout@v3
+          with:
+            repository: '5gplustactile/deployment-digital-twins'
+            ref: ${{ github.head_ref }}
+            fetch-depth: 0
+            token: ${{ secrets.ACCESS_TOKEN }}          
+
+        # extract branch name
+        - name: Extract branch name
+          shell: bash
+          run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+          id: extract_branch
+
+        - name: Get branch name
+          run: echo 'The branch name is' ${{ steps.extract_branch.outputs.branch }}
+
+        - name: Getting variable branch
+          run: |
+           echo "BRANCH=$(echo ${{ steps.extract_branch.outputs.branch }} | cut -d/ -f2)" >> $GITHUB_ENV
+
+        - name: Getting helm values
+          env:
+             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+            echo "### install yq ###"
+            sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+            sudo chmod a+x /usr/local/bin/yq
+            yq --version
+
+            # Read the YAML file
+            yaml_file="${{ env.BRANCH }}/main.yaml"
+            
+            # Use yq to extract the values
+            name=$(yq e '.metadata.name' $yaml_file)
+            repoURL=$(yq e '.spec.source.repoURL' $yaml_file)
+            targetRevision=$(yq e '.spec.source.targetRevision' $yaml_file)
+            chart=$(yq e '.spec.source.chart' $yaml_file)
+            
+            # Print the values
+            echo "repoURL: $repoURL"
+            echo "targetRevision: $targetRevision"
+            echo "chart: $chart"
+
+            helm repo add $name $repoURL 
+            helm template $name $name/$chart --version $targetRevision --namespace $name | tee ${{ env.BRANCH }}/k8s-$name.yaml
+
+
+        - name: Run Terrascan - edge ${{ env.BRANCH }}
+          env:
+            ZONE: edge
+          id: terrascan_edge
+          uses: tenable/terrascan-action@main
+          with:
+            iac_type: 'k8s'
+            iac_version: 'v1'
+            policy_type: 'k8s'
+            only_warn: true
+            sarif_upload: false
+            iac_dir: ${{ env.BRANCH }}/k8s-$name.yaml
+            verbose: true
+           #non_recursive:
+           #policy_path:
+           #skip_rules:
+
+#        - name: Upload SARIF file
+#          uses: github/codeql-action/upload-sarif@v1
+#          with:
+#            sarif_file: terrascan_region.sarif
