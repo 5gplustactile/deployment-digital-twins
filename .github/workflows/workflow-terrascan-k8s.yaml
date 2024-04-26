@@ -74,7 +74,6 @@ jobs:
             helm template $name $name/$chart --version $targetRevision --namespace $name | tee /tmp/k8s-$name-main.yaml
 
         - name: Run Terrascan - ${{ env.NAME_DIGITAL_TWINS }}
-          env:
           id: terrascan_edge
           uses: tenable/terrascan-action@main
           with:
