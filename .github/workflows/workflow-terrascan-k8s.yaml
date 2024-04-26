@@ -40,6 +40,15 @@ jobs:
             sudo chmod a+x /usr/local/bin/yq
             yq --version
 
+            echo "### install helm ###"
+            # Download Helm
+            curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3           
+            # Give the script execute permission
+            chmod 700 get_helm.sh           
+            # Run the install script
+            ./get_helm.sh
+            helm version
+
             # Read the YAML file
             yaml_file="${{ env.BRANCH }}/main.yaml"
             
@@ -54,6 +63,7 @@ jobs:
             echo "targetRevision: $targetRevision"
             echo "chart: $chart"
 
+            echo "#### helm template ###"
             helm repo add $name $repoURL 
             helm template $name $name/$chart --version $targetRevision --namespace $name | tee ${{ env.BRANCH }}/k8s-$name.yaml
 
