@@ -65,6 +65,7 @@ jobs:
             chart=$(yq e '.spec.source.chart' $yaml_file)
             
             # Print the values
+            echo "name: $name"
             echo "repoURL: $repoURL"
             echo "targetRevision: $targetRevision"
             echo "chart: $chart"
