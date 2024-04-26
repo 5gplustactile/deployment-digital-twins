@@ -31,24 +31,29 @@ jobs:
           run: |
            echo "BRANCH=$(echo ${{ steps.extract_branch.outputs.branch }} | cut -d/ -f2)" >> $GITHUB_ENV
 
+        - name: Installing dependencies
+          env:
+            GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |  
+           echo "### install yq ###"
+           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+           sudo chmod a+x /usr/local/bin/yq
+           yq --version
+
+           echo "### install helm ###"
+           # Download Helm
+           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3           
+           # Give the script execute permission
+           chmod 700 get_helm.sh           
+           # Run the install script
+           ./get_helm.sh
+           helm version
+
+
         - name: Getting helm values
           env:
              GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           run: |
-            echo "### install yq ###"
-            sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-            sudo chmod a+x /usr/local/bin/yq
-            yq --version
-
-            echo "### install helm ###"
-            # Download Helm
-            curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3           
-            # Give the script execute permission
-            chmod 700 get_helm.sh           
-            # Run the install script
-            ./get_helm.sh
-            helm version
-
             # Read the YAML file
             yaml_file="${{ env.BRANCH }}/main.yaml"
             
