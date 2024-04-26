@@ -70,7 +70,7 @@ jobs:
 
             echo "#### helm template ###"
             helm repo add $name $repoURL 
-            helm template $name $name/$chart --version $targetRevision --namespace $name | tee ${{ env.BRANCH }}/k8s-$name.yaml
+            helm template $name $name/$chart --version $targetRevision --namespace $name | tee ${{ env.BRANCH }}/k8s-main.yaml
 
         - name: Run Terrascan - edge ${{ env.BRANCH }}
           env:
@@ -83,7 +83,7 @@ jobs:
             policy_type: 'k8s'
             only_warn: true
             sarif_upload: false
-            iac_dir: ${{ env.BRANCH }}/k8s-$name.yaml
+            iac_dir: ${{ env.BRANCH }}/k8s-main.yaml
             verbose: true
            #non_recursive:
            #policy_path:
