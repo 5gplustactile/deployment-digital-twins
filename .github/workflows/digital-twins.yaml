@@ -12,6 +12,7 @@ jobs:
             ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
     creating:
+        needs: infrastructure_vulnerability_scanning
         uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-digital-twins.yaml@main
         secrets:
             ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
