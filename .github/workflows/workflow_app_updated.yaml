@@ -52,11 +52,11 @@ jobs:
         - name: Use branch name - filtered
           run: |
             BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
-            echo "BRANCH_DT=$(echo $BRANCH_NAME | cut -d/ -f2)" >> $GITHUB_ENV#
-            
+            echo "BRANCH_DT=$(echo $BRANCH_NAME | cut -d/ -f2)" >> $GITHUB_ENV
+
         - name: Get branch name
           run: |
-            echo 'The branch name is' ${{ env.BRANCH_DT }}#
+            echo 'The branch name is' ${{ env.BRANCH_DT }}
 
         - name: check repoURL and targetRevision main.yaml file
           run: |
