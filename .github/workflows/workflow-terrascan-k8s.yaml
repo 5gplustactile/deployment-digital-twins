@@ -63,6 +63,7 @@ jobs:
             repoURL=$(yq e '.spec.source.repoURL' $yaml_file)
             targetRevision=$(yq e '.spec.source.targetRevision' $yaml_file)
             chart=$(yq e '.spec.source.chart' $yaml_file)
+            echo "$CHART=$chart" >> $GITHUB_ENV
             
             # Print the values
             echo "name: $name"
@@ -72,7 +73,7 @@ jobs:
 
             echo "#### helm template ###"
             helm repo add $name $repoURL 
-            helm template ${{ env.NAME_DIGITAL_TWINS }} ${{ env.NAME_DIGITAL_TWINS }}/$chart --version $targetRevision --namespace ${{ env.NAME_DIGITAL_TWINS }} > /tmp/k8s-${{ env.NAME_DIGITAL_TWINS }}-main.yaml
+            helm template ${{ env.NAME_DIGITAL_TWINS }} ${{ env.NAME_DIGITAL_TWINS }}/$chart --version $targetRevision --namespace ${{ env.NAME_DIGITAL_TWINS }} --output-dir /tmp/
 
         - name: Run Terrascan - ${{ env.NAME_DIGITAL_TWINS }}
           id: terrascan_edge
@@ -83,7 +84,7 @@ jobs:
             policy_type: 'k8s'
             only_warn: true
             sarif_upload: false
-            iac_dir: /tmp/k8s-${{ env.NAME_DIGITAL_TWINS }}-main.yaml
+            iac_dir: /tmp/${{ env.CHART }}
             verbose: true
            #non_recursive:
            #policy_path:
