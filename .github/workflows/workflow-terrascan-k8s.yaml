@@ -58,24 +58,22 @@ jobs:
             yaml_file="${{ env.BRANCH }}/main.yaml"
             
             # Use yq to extract the values
-            name=$(yq e '.metadata.name' $yaml_file)
-            repoURL=$(yq e '.spec.source.repoURL' $yaml_file)
-            targetRevision=$(yq e '.spec.source.targetRevision' $yaml_file)
-            chart=$(yq e '.spec.source.chart' $yaml_file)
-            echo "$CHART=$chart" >> $GITHUB_ENV
+            echo "NAME=$(yq e '.metadata.name' $yaml_file)" >> $GITHUB_ENV
+            echo "REPOURL=$(yq e '.spec.source.repoURL' $yaml_file)" >> $GITHUB_ENV
+            echo "TARGETREVISION=$(yq e '.spec.source.targetRevision' $yaml_file)" >> $GITHUB_ENV
+            echo "CHART=$(yq e '.spec.source.chart' $yaml_file)" >> $GITHUB_ENV
             
             # Print the values
-            echo "name: $name"
-            echo "repoURL: $repoURL"
-            echo "targetRevision: $targetRevision"
-            echo "chart: $chart"
+            echo "NAME: $${{ env.NAME }}"
+            echo "repoURL: ${{ env.REPOURL }}"
+            echo "targetRevision: ${{ env.TARGETREVISION }}"
+            echo "CHART: ${{ env.CHART }}"
             
             mkdir -p ${{ env.BRANCH }}/temporal/
-            echo "CHART=${{ env.CHART }}"
 
             echo "#### helm template ###"
-            helm repo add $name $repoURL 
-            helm template $name $name/$chart --version $targetRevision --namespace $name --output-dir ${{ env.BRANCH }}/temporal/
+            helm repo add $name ${{ env.REPOURL }} 
+            helm template ${{ env.NAME }} ${{ env.NAME }}/$${{ env.CHART }} --version ${{ env.TARGETREVISION }} --namespace ${{ env.NAME }} --output-dir ${{ env.BRANCH }}/temporal
 
         - name: Run Terrascan - ${{ env.CHART }}
           id: terrascan_edge
