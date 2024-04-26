@@ -31,6 +31,15 @@ jobs:
            sudo chmod a+x /usr/local/bin/yq
            yq --version
 
+        # extract branch name
+        - name: Extract branch name
+          shell: bash
+          run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+          id: extract_branch
+
+        - name: Get branch name
+          run: echo 'The branch name is' ${{ steps.extract_branch.outputs.branch }}
+
         - name: Get branch name - filtered
           id: get_branch
           run: |
@@ -44,6 +53,7 @@ jobs:
           run: |
             BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
             echo "BRANCH_DT=$(echo $BRANCH_NAME | cut -d/ -f2)" >> $GITHUB_ENV#
+            
         - name: Get branch name
           run: |
             echo 'The branch name is' ${{ env.BRANCH_DT }}#
