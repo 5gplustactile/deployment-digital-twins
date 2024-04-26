@@ -59,6 +59,7 @@ jobs:
             
             # Use yq to extract the values
             name=$(yq e '.metadata.name' $yaml_file)
+            echo "$NAME_DIGITAL_TWINS=$name" >> $GITHUB_ENV
             repoURL=$(yq e '.spec.source.repoURL' $yaml_file)
             targetRevision=$(yq e '.spec.source.targetRevision' $yaml_file)
             chart=$(yq e '.spec.source.chart' $yaml_file)
@@ -70,11 +71,10 @@ jobs:
 
             echo "#### helm template ###"
             helm repo add $name $repoURL 
-            helm template $name $name/$chart --version $targetRevision --namespace $name | tee ${{ env.BRANCH }}/k8s-main.yaml
+            helm template $name $name/$chart --version $targetRevision --namespace $name | tee /tmp/k8s-$name-main.yaml
 
-        - name: Run Terrascan - edge ${{ env.BRANCH }}
+        - name: Run Terrascan - ${{ env.NAME_DIGITAL_TWINS }}
           env:
-            ZONE: edge
           id: terrascan_edge
           uses: tenable/terrascan-action@main
           with:
@@ -83,7 +83,7 @@ jobs:
             policy_type: 'k8s'
             only_warn: true
             sarif_upload: false
-            iac_dir: ${{ env.BRANCH }}/k8s-main.yaml
+            iac_dir: /tmp/k8s-${{ env.NAME_DIGITAL_TWINS }}-main.yaml
             verbose: true
            #non_recursive:
            #policy_path:
