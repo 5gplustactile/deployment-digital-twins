@@ -67,7 +67,6 @@ jobs:
             helm repo add $name $repoURL 
             helm template $name $name/$chart --version $targetRevision --namespace $name | tee ${{ env.BRANCH }}/k8s-$name.yaml
 
-
         - name: Run Terrascan - edge ${{ env.BRANCH }}
           env:
             ZONE: edge
