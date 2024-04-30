@@ -7,13 +7,13 @@ on:
 jobs:
 
     infrastructure_vulnerability_scanning:
-        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-terrascan-k8s.yaml@dt/opentwins
+        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-terrascan-k8s.yaml@pipelines
         secrets:
             ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
     creating:
         needs: infrastructure_vulnerability_scanning
-        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-digital-twins.yaml@main
+        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-digital-twins.yaml@pipelines
         secrets:
             ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
             GIT_REPO: ${{ secrets.GIT_REPO }}
