@@ -89,7 +89,7 @@ jobs:
           run: |
             # kubescape scan
             
-            kubescape scan framework cis-v1.23-t1.0.1 -v ${{ env.BRANCH }}/temporal/${{ env.CHART }}  --format html --output ${{ env.CHART }}.html
+            kubescape scan framework cis-v1.23-t1.0.1 -v ${{ env.BRANCH }}/temporal/${{ env.CHART }} --scan-images --format html --output ${{ env.CHART }}.html
 
         - name: Upload ${{ env.CHART }}.html
           uses: actions/upload-artifact@v2
