@@ -11,11 +11,6 @@ jobs:
         secrets:
             ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
-    kubescan_day_0:
-        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-kubescan.yaml@pipelines
-        secrets:
-            ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-
     creating:
         needs: infrastructure_vulnerability_scanning
         uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-digital-twins.yaml@pipelines
