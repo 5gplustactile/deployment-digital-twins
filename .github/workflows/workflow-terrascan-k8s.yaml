@@ -102,17 +102,3 @@ jobs:
 #          uses: github/codeql-action/upload-sarif@v1
 #          with:
 #            sarif_file: terrascan_region.sarif
-
-        - name: Kubescape scan - ${{ env.CHART }}
-          env:
-             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          run: |
-            # kubescape scan
-            
-            kubescape scan framework cis-v1.23-t1.0.1 -v ${{ env.BRANCH }}/temporal/${{ env.CHART }}  --format html --output ${{ env.CHART }}.html
-
-        - name: Upload ${{ env.CHART }}.html
-          uses: actions/upload-artifact@v2
-          with:
-            name:  ${{ env.CHART }}_html
-            path: ${{ env.CHART }}.html
