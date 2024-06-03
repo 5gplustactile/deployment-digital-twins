@@ -1,0 +1,97 @@
+name: kubescan day-0
+on:
+  workflow_call:
+    secrets:
+      ACCESS_TOKEN:
+        required: true
+
+jobs:
+    kubescan_day_0:
+        name: kubescan_day_0
+        runs-on: self-hosted
+        steps:
+        - name: pulling repo 5gplustactile/deployment-digital-twins
+          uses: actions/checkout@v3
+          with:
+            repository: '5gplustactile/deployment-digital-twins'
+            ref: ${{ github.head_ref }}
+            fetch-depth: 0
+            token: ${{ secrets.ACCESS_TOKEN }}          
+
+        # extract branch name
+        - name: Extract branch name
+          shell: bash
+          run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+          id: extract_branch
+
+        - name: Get branch name
+          run: echo 'The branch name is' ${{ steps.extract_branch.outputs.branch }}
+
+        - name: Getting variable branch
+          run: |
+           echo "BRANCH=$(echo ${{ steps.extract_branch.outputs.branch }} | cut -d/ -f2)" >> $GITHUB_ENV
+
+        - name: Installing dependencies
+          env:
+            GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |  
+           echo "### install yq ###"
+           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+           sudo chmod a+x /usr/local/bin/yq
+           yq --version
+
+           echo "### install helm ###"
+           # Download Helm
+           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3           
+           # Give the script execute permission
+           chmod 700 get_helm.sh           
+           # Run the install script
+           ./get_helm.sh
+           helm version
+
+           echo "### install kubescape ###"
+           sudo curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | bash
+           kubescape version
+
+
+        - name: Getting helm values
+          env:
+             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+            
+            # Use yq to extract the values
+            echo "NAME=$(yq e '.metadata.name' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+            echo "REPOURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+            echo "TARGETREVISION=$(yq e '.spec.source.targetRevision' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+            echo "CHART=$(yq e '.spec.source.chart' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+            
+        - name: Helm template
+          env:
+             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+            
+            # Print the values
+            echo "NAME: ${{ env.NAME }}"
+            echo "repoURL: ${{ env.REPOURL }}"
+            echo "targetRevision: ${{ env.TARGETREVISION }}"
+            echo "CHART: ${{ env.CHART }}"
+            
+            mkdir -p ${{ env.BRANCH }}/temporal/
+
+            echo "#### helm template ###"
+            helm repo add ${{ env.NAME }} ${{ env.REPOURL }} 
+            helm template ${{ env.NAME }} ${{ env.NAME }}/${{ env.CHART }} --version ${{ env.TARGETREVISION }} --namespace ${{ env.NAME }} --output-dir ${{ env.BRANCH }}/temporal
+
+        - name: Kubescape scan - ${{ env.CHART }}
+          env:
+             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+            # kubescape scan
+            
+            kubescape scan framework cis-v1.23-t1.0.1 -v ${{ env.BRANCH }}/temporal/${{ env.CHART }}  --format html --output ${{ env.CHART }}.html
+
+        - name: Upload ${{ env.CHART }}.html
+          uses: actions/upload-artifact@v2
+          with:
+            name:  ${{ env.CHART }}_html
+            path: ${{ env.CHART }}.html

@@ -6,7 +6,13 @@ on:
 
 jobs:
 
+    kubescan_day_0:
+        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-kubescan.yaml@pipelines
+        secrets:
+            ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
     infrastructure_vulnerability_scanning:
+        needs: kubescan_day_0
         uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-terrascan-k8s.yaml@pipelines
         secrets:
             ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
