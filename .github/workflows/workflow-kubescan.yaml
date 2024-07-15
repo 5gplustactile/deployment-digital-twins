@@ -1,4 +1,4 @@
-name: terrascan vulnerabilities
+name: kubescan day-0
 on:
   workflow_call:
     secrets:
@@ -6,8 +6,8 @@ on:
         required: true
 
 jobs:
-    terrascan_k8s:
-        name: terrascan_k8s
+    kubescan_day_0:
+        name: kubescan_day_0
         runs-on: self-hosted
         steps:
         - name: pulling repo 5gplustactile/deployment-digital-twins
@@ -82,23 +82,16 @@ jobs:
             helm repo add ${{ env.NAME }} ${{ env.REPOURL }} 
             helm template ${{ env.NAME }} ${{ env.NAME }}/${{ env.CHART }} --version ${{ env.TARGETREVISION }} --namespace ${{ env.NAME }} --output-dir ${{ env.BRANCH }}/temporal
 
+        - name: Kubescape scan - ${{ env.CHART }}
+          env:
+             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+            # kubescape scan
+            
+            kubescape scan framework cis-v1.23-t1.0.1 -v ${{ env.BRANCH }}/temporal/${{ env.CHART }}  --format html --output ${{ env.CHART }}.html
 
-        - name: Run Terrascan - ${{ env.CHART }}
-          id: terrascan_edge
-          uses: tenable/terrascan-action@main
+        - name: Upload ${{ env.CHART }}.html
+          uses: actions/upload-artifact@v2
           with:
-            iac_type: 'k8s'
-            iac_version: 'v1'
-            policy_type: 'k8s'
-            only_warn: true
-            sarif_upload: false
-            iac_dir: ${{ env.BRANCH }}/temporal/${{ env.CHART }}
-            verbose: true
-           #non_recursive:
-           #policy_path:
-           #skip_rules:
-
-#        - name: Upload SARIF file
-#          uses: github/codeql-action/upload-sarif@v1
-#          with:
-#            sarif_file: terrascan_region.sarif
+            name:  ${{ env.CHART }}_html
+            path: ${{ env.CHART }}.html
