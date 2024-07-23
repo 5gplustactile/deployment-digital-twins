@@ -62,6 +62,8 @@ jobs:
             
             # Use yq to extract the values
             echo "NAME=$(yq e '.metadata.name' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+            repoURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH_DT }}/main.yaml)
+            
             # Check if the repoURL contains the string "5gplustactile" after "https://"
             if echo "$repoURL" | grep -q "https://.*5gplustactile"; then
                 echo "The repoURL contains '5gplustactile' after 'https://', so. It is local repo"
