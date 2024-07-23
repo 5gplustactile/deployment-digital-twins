@@ -5,11 +5,23 @@ on:
           - 'dt/**'
 
 jobs:
+
+    kubescan_day_0:
+        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-kubescan.yaml@pipelines
+        secrets:
+            ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+    infrastructure_vulnerability_scanning:
+        needs: kubescan_day_0
+        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-terrascan-k8s.yaml@pipelines
+        secrets:
+            ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
     creating:
-        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-digital-twins.yaml@main
+        needs: infrastructure_vulnerability_scanning
+        uses: 5gplustactile/deployment-digital-twins/.github/workflows/workflow-digital-twins.yaml@pipelines
         secrets:
             ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
             GIT_REPO: ${{ secrets.GIT_REPO }}
             ARGOCD_PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}
             ARGOCD_HOSTNAME: ${{ secrets.ARGOCD_HOSTNAME }} 
-

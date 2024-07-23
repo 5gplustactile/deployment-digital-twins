@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opentwins
+  namespace: argocd
+spec:
+  project: digital-twins
+  source:
+    repoURL: 'https://ertis-research.github.io/Helm-charts/'
+    targetRevision: 0.5.17
+    path: ''
+    chart: OpenTwins
+    helm:
+      valueFiles:
+        - values.yaml
+      values: "persistentVolumes:\n  grafana: true\n  hono: true\n  influxdb2: true        \n"
+  destination:
+    server: 'https://internal-kx7x60bjvby2tvc0r53vvci12514-k8s-663204783.eu-west-3.elb.amazonaws.com:6443'
+    namespace: opentwins
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
