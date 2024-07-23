@@ -62,11 +62,45 @@ jobs:
             
             # Use yq to extract the values
             echo "NAME=$(yq e '.metadata.name' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
-            echo "REPOURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
-            echo "TARGETREVISION=$(yq e '.spec.source.targetRevision' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
-            echo "CHART=$(yq e '.spec.source.chart' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+            # Check if the repoURL contains the string "5gplustactile" after "https://"
+            if echo "$repoURL" | grep -q "https://.*5gplustactile"; then
+                echo "The repoURL contains '5gplustactile' after 'https://', so. It is local repo"
+                echo "REPOURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+                echo "PATH_REPO=$(yq e '.spec.source.path' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+                echo "TARGETREVISION=$(yq e '.spec.source.targetRevision' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+                echo "REPO_IS_LOCAL=true" >> $GITHUB_ENV
+            else
+              echo "The repoURL does not contain '5gplustactile' after 'https://', so, the repoURL is external repo..Skipping"
+              echo "REPOURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+              echo "TARGETREVISION=$(yq e '.spec.source.targetRevision' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+              echo "CHART=$(yq e '.spec.source.chart' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+              echo "REPO_IS_LOCAL=false" >> $GITHUB_ENV
+            fi
+
             
-        - name: Helm template
+        - name: Helm template - Local Helm repo
+          if: ${{ env.REPO_IS_LOCAL == 'true' }} 
+          env:
+             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+            
+            # Print the values
+            echo "NAME: ${{ env.NAME }}"
+            echo "repoURL: ${{ env.REPOURL }}"
+            echo "path: ${{ env.PATH_REPO }}"
+            echo "targetRevision: ${{ env.TARGETREVISION }}"
+            
+            mkdir -p ${{ env.BRANCH }}/temporal/
+
+            echo "#### helm template ###"
+            git clone ${{ env.REPOURL }}
+            FOLDER_REPO=$(basename ${{ env.REPOURL }} .git)
+            echo FOLDER_REPO=$(echo $FOLDER_REPO)
+
+            helm template $FOLDER_REPO/${{ env.PATH_REPO }} --namespace ${{ env.NAME }} --output-dir ${{ env.BRANCH }}/temporal
+
+        - name: Helm template - External Helm repo
+          if: ${{ env.REPO_IS_LOCAL == 'false' }} 
           env:
              GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           run: |
@@ -83,7 +117,18 @@ jobs:
             helm repo add ${{ env.NAME }} ${{ env.REPOURL }} 
             helm template ${{ env.NAME }} ${{ env.NAME }}/${{ env.CHART }} --version ${{ env.TARGETREVISION }} --namespace ${{ env.NAME }} --output-dir ${{ env.BRANCH }}/temporal
 
-        - name: Kubescape scan - ${{ env.CHART }}
+        - name: Kubescape scan - ${{ env.NAME }} - Local Helm repo
+          if: ${{ env.REPO_IS_LOCAL == 'true' }} 
+          env:
+             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+            # kubescape scan
+            
+            kubescape scan framework cis-v1.23-t1.0.1 -v ${{ env.BRANCH }}/temporal/${{ env.NAME }} --scan-images --format html --output ${{ env.NAME }}.html
+
+
+        - name: Kubescape scan - ${{ env.CHART }} - External Helm repo
+          if: ${{ env.REPO_IS_LOCAL == 'false' }} 
           env:
              GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           run: |
@@ -91,7 +136,15 @@ jobs:
             
             kubescape scan framework cis-v1.23-t1.0.1 -v ${{ env.BRANCH }}/temporal/${{ env.CHART }} --scan-images --format html --output ${{ env.CHART }}.html
 
+        - name: Upload ${{ env.NAME }}.html
+          if: ${{ env.REPO_IS_LOCAL == 'true' }}
+          uses: actions/upload-artifact@v2
+          with:
+            name:  ${{ env.NAME }}_html
+            path: ${{ env.NAME }}.html
+
         - name: Upload ${{ env.CHART }}.html
+          if: ${{ env.REPO_IS_LOCAL == 'false' }}
           uses: actions/upload-artifact@v2
           with:
             name:  ${{ env.CHART }}_html
