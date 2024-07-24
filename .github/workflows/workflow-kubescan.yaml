@@ -105,7 +105,7 @@ jobs:
 
             echo "#### helm template ###"
 
-            helm template ${{ env.FOLDER_REPO }}/${{ env.PATH_REPO }} --namespace ${{ env.NAME }} --output-dir ${{ env.BRANCH }}/temporal
+            helm template ${{ env.PATH_REPO }}/ --namespace ${{ env.NAME }} --output-dir ${{ env.BRANCH }}/temporal
 
         - name: Helm template - External Helm repo
           if: ${{ env.REPO_IS_LOCAL == 'false' }} 
