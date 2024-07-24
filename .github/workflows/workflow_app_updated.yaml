@@ -87,7 +87,7 @@ jobs:
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"  
             git add .
-            git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}" --allow-empty#
+            git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}" --allow-empty
 
 
         - name: push changes in 5gplustactile/deployment-digital-twins repository
