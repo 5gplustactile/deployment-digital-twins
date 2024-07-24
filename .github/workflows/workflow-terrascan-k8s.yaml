@@ -57,11 +57,55 @@ jobs:
             
             # Use yq to extract the values
             echo "NAME=$(yq e '.metadata.name' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
-            echo "REPOURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
-            echo "TARGETREVISION=$(yq e '.spec.source.targetRevision' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
-            echo "CHART=$(yq e '.spec.source.chart' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+            repoURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH }}/main.yaml)
             
-        - name: Helm template
+            # Check if the repoURL contains the string "5gplustactile" after "https://"
+            if echo "$repoURL" | grep -q "https://.*5gplustactile"; then
+                echo "The repoURL contains '5gplustactile' after 'https://', so. It is local repo"
+                echo "REPOURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+                echo "PATH_REPO=$(yq e '.spec.source.path' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+                echo "FOLDER_REPO=$(basename $repoURL .git)" >> $GITHUB_ENV
+                echo "TARGETREVISION=$(yq e '.spec.source.targetRevision' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+                echo "REPO_IS_LOCAL=true" >> $GITHUB_ENV
+            else
+              echo "The repoURL does not contain '5gplustactile' after 'https://', so, the repoURL is external repo..Skipping"
+              echo "REPOURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+              echo "TARGETREVISION=$(yq e '.spec.source.targetRevision' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+              echo "CHART=$(yq e '.spec.source.chart' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
+              echo "REPO_IS_LOCAL=false" >> $GITHUB_ENV
+            fi
+  
+            
+        - name: pulling repo ${{ env.REPOURL }}
+          if: ${{ env.REPO_IS_LOCAL == 'true' }} 
+          uses: actions/checkout@v3
+          with:
+            repository: '5gplustactile/${{ env.FOLDER_REPO }}'
+            ref: main
+            fetch-depth: 0
+            token: ${{ secrets.ACCESS_TOKEN }} 
+
+
+        - name: Helm template - Local helm repo
+          if: ${{ env.REPO_IS_LOCAL == 'true' }} 
+          env:
+             GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          run: |
+            
+            # Print the values
+            echo "NAME: ${{ env.NAME }}"
+            echo "repoURL: ${{ env.REPOURL }}"
+            echo "path: ${{ env.PATH_REPO }}"
+            
+            mkdir -p ${{ env.BRANCH }}/temporal/
+
+            echo "#### helm template ###"
+
+            helm template ${{ env.PATH_REPO }}/ --namespace ${{ env.NAME }} --output-dir ${{ env.BRANCH }}/temporal
+
+
+        - name: Helm template - External helm repo
+          if: ${{ env.REPO_IS_LOCAL == 'false' }} 
           env:
              GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           run: |
@@ -79,7 +123,30 @@ jobs:
             helm template ${{ env.NAME }} ${{ env.NAME }}/${{ env.CHART }} --version ${{ env.TARGETREVISION }} --namespace ${{ env.NAME }} --output-dir ${{ env.BRANCH }}/temporal
 
 
-        - name: Run Terrascan - ${{ env.CHART }}
+        - name: Run Terrascan - ${{ env.CHART }} - Local Helm repo
+          if: ${{ env.REPO_IS_LOCAL == 'true' }}
+          id: terrascan_edge
+          uses: tenable/terrascan-action@main
+          with:
+            iac_type: 'k8s'
+            iac_version: 'v1'
+            policy_type: 'k8s'
+            only_warn: true
+            sarif_upload: false
+            iac_dir: ${{ env.BRANCH }}/temporal/${{ env.NAME }}
+            verbose: true
+           #non_recursive:
+           #policy_path:
+           #skip_rules:
+
+#        - name: Upload SARIF file
+#          uses: github/codeql-action/upload-sarif@v1
+#          with:
+#            sarif_file: terrascan_region.sarif
+
+
+        - name: Run Terrascan - ${{ env.CHART }} - External Helm repo
+          if: ${{ env.REPO_IS_LOCAL == 'false' }}
           id: terrascan_edge
           uses: tenable/terrascan-action@main
           with:
