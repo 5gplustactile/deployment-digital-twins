@@ -125,7 +125,7 @@ jobs:
 
         - name: Run Terrascan - ${{ env.CHART }} - Local Helm repo
           if: ${{ env.REPO_IS_LOCAL == 'true' }}
-          id: terrascan_edge
+          id: terrascan_edge_int
           uses: tenable/terrascan-action@main
           with:
             iac_type: 'k8s'
@@ -147,7 +147,7 @@ jobs:
 
         - name: Run Terrascan - ${{ env.CHART }} - External Helm repo
           if: ${{ env.REPO_IS_LOCAL == 'false' }}
-          id: terrascan_edge
+          id: terrascan_edge_ext
           uses: tenable/terrascan-action@main
           with:
             iac_type: 'k8s'
