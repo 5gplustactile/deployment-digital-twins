@@ -12,7 +12,7 @@ spec:
     path: 'helms/airflow'
     helm:
       valueFiles:
-        - values.yaml
+        - values-airflow.yaml
   destination:
     server: 'https://internal-edge-clusters-core5g-apiserver-988246090.eu-west-3.elb.amazonaws.com:6443'
     namespace: airflow
