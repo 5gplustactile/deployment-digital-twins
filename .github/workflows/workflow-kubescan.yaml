@@ -69,7 +69,7 @@ jobs:
                 echo "The repoURL contains '5gplustactile' after 'https://', so. It is local repo"
                 echo "REPOURL=$(yq e '.spec.source.repoURL' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
                 echo "PATH_REPO=$(yq e '.spec.source.path' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
-                echo "FOLDER_REPO=$(basename $REPOURL .git)" >> $GITHUB_ENV
+                echo "FOLDER_REPO=$(basename $repoURL .git)" >> $GITHUB_ENV
                 echo "TARGETREVISION=$(yq e '.spec.source.targetRevision' ${{ env.BRANCH }}/main.yaml)" >> $GITHUB_ENV
                 echo "REPO_IS_LOCAL=true" >> $GITHUB_ENV
             else
