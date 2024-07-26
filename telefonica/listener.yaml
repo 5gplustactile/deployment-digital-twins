@@ -1,0 +1,23 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: listener-events
+  namespace: argocd
+spec:
+  project: digital-twins
+  source:
+    repoURL: 'https://github.com/5gplustactile/tactile-events-svc.git'
+    targetRevision: main
+    path: 'helm/events-svc'
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://internal-edge-clusters-core5g-apiserver-988246090.eu-west-3.elb.amazonaws.com:6443'
+    namespace: listener-events
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
