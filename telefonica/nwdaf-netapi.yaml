@@ -1,0 +1,23 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nwdaf-netapi
+  namespace: argocd
+spec:
+  project: digital-twins
+  source:
+    repoURL: 'https://github.com/5gplustactile/tactile-openNwdaf-netapi.git'
+    targetRevision: main
+    path: 'helm/nwdaf-netapi'
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://internal-edge-clusters-core5g-apiserver-988246090.eu-west-3.elb.amazonaws.com:6443'
+    namespace: nwdaf-netapi
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
