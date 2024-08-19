@@ -32,6 +32,14 @@ Events-svc
 | mongo.events-svc.svc.cluster.local | 27017/TCP |
 | mongo-express.events-svc.svc.cluster.local | 8082/TCP |
 
+NWDAF
+-----
+-----
+
+| Internal Endpoint | Ports|
+|----------|----------|
+| nwdaf-nginx.nwdaf-netapi.svc.cluster.local | 80/TCP |
+
 ArgoCD
 -------
 -------
