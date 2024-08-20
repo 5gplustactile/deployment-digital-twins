@@ -22,6 +22,20 @@ Prometheus
 |----------|----------|
 | prometheus.prometheus-system.svc.cluster.local | 9090/TCP |
 
+```
+# to access to prometheus external endpoint, use the jump host and foxiproxy using this ssh config (you must be connected through the ITuser VPN):
+Host tactile5g-telefonica
+  HostName 10.11.29.8
+  ProxyJump pen-socks
+  User labuser
+  DynamicForward 8080
+```
+
+| External Endpoint | Ports|
+|----------|----------|
+| http://10.11.29.104:9090 | 9090/TCP |
+
+
 Events-svc
 ----------
 ----------
@@ -39,6 +53,43 @@ NWDAF
 | Internal Endpoint | Ports|
 |----------|----------|
 | nwdaf-nginx.nwdaf-netapi.svc.cluster.local | 80/TCP |
+
+Airflow
+-------
+-------
+
+```
+# to access to airflow external endpoint, use the jump host and foxiproxy using this ssh config (you must be connected through the ITuser VPN):
+Host tactile5g-telefonica
+  HostName 10.11.29.8
+  ProxyJump pen-socks
+  User labuser
+  DynamicForward 8080
+```
+
+| External Endpoint | Ports|
+|----------|----------|
+| http://10.11.29.105:8080 | 8080/TCP |
+
+
+Skooner
+-------
+-------
+
+```
+# to access to skooner external endpoint, use the jump host and foxiproxy using this ssh config (you must be connected through the ITuser VPN):
+Host tactile5g-telefonica
+  HostName 10.11.29.8
+  ProxyJump pen-socks
+  User labuser
+  DynamicForward 8080
+```
+
+
+| External Endpoint | Ports|
+|----------|----------|
+| http://10.11.29.103:4654/ | 4654/TCP |
+
 
 ArgoCD
 -------
