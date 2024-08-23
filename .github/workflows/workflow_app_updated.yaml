@@ -70,8 +70,7 @@ jobs:
                 echo "The repoURL contains '5gplustactile' after 'https://', so. It is local repo"
                 echo "REPO_IS_LOCAL=true" >> $GITHUB_ENV
 
-                #yq eval '.spec.syncPolicy.automated = {} | .spec.source.targetRevision = "main"' ${{ env.BRANCH_DT }}/main.yaml -i
-                yq eval '.spec.source.targetRevision = "main"' ${{ env.BRANCH_DT }}/main.yaml -i
+                yq eval '..spec.syncPolicy.automated.selfHeal = true | .spec.source.targetRevision = "main"' ${{ env.BRANCH_DT }}/main.yaml -i
 
                 echo "#### cat of cat ${{ env.BRANCH_DT }}/main.yaml ###"
                 cat ${{ env.BRANCH_DT }}/main.yaml

@@ -109,8 +109,7 @@ jobs:
         - name: setting application digital twins
           run: |
            #argocd login --username admin --password ${{ secrets.ARGOCD_PASSWORD }}  ${{ secrets.ARGOCD_HOSTNAME }} --insecure
-           #yq eval '.spec.syncPolicy.automated = null | .spec.source.targetRevision = "${{ steps.extract_branch.outputs.branch }}"' ${{ env.BRANCH_DT }}/main.yaml -i
-           yq eval '.spec.source.targetRevision = "${{ steps.extract_branch.outputs.branch }}"' ${{ env.BRANCH_DT }}/main.yaml -i
+           yq eval '.spec.syncPolicy.automated.selfHeal = true | .spec.source.targetRevision = "${{ steps.extract_branch.outputs.branch }}"' ${{ env.BRANCH_DT }}/main.yaml -i
            cat ${{ env.BRANCH_DT }}/main.yaml
            
         - name: create Pull Request
