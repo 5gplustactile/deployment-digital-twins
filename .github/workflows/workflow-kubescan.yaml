@@ -146,14 +146,14 @@ jobs:
 
         - name: Upload ${{ env.NAME }}.html
           if: ${{ env.REPO_IS_LOCAL == 'true' }}
-          uses: actions/upload-artifact@v2
+          uses: actions/upload-artifact@v4
           with:
             name:  ${{ env.NAME }}_html
             path: ${{ env.NAME }}.html
 
         - name: Upload ${{ env.CHART }}.html
           if: ${{ env.REPO_IS_LOCAL == 'false' }}
-          uses: actions/upload-artifact@v2
+          uses: actions/upload-artifact@v4
           with:
             name:  ${{ env.CHART }}_html
             path: ${{ env.CHART }}.html
