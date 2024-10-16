@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: opentwins
+  name: demo-opentwins
   namespace: argocd
 spec:
   project: digital-twins
