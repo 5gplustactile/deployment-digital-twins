@@ -16,30 +16,24 @@ El objetivo principal de este repositorio es:
 
 ## Estructura del Repositorio
 
-- **`demo/`**: Contiene un ejemplo mínimo para probar la funcionalidad de los gemelos digitales.
+- **`demo/`**: Configuración específica para el entorno demo.
   - `main.yaml`: Archivo principal de configuración para la demo.
 
 - **`examples/`**: Directorio con ejemplos prácticos para personalizar y desplegar gemelos digitales.
   - **`digital-twins/`**: Plantillas base para configuraciones de gemelos digitales.
     - `whoami/`: Ejemplo práctico con Kustomize.
-      - `base/`: Configuración base de la aplicación.
-      - `overlays/`: Sobrecargas para personalizaciones específicas.
 
 - **`opentwins/`**: Configuración específica para el entorno **OpenTwins**.
   - `main.yaml`: Archivo principal de despliegue en OpenTwins.
 
 - **`telefonica/`**: Configuraciones de gemelos digitales y servicios específicos para Telefónica.
-  - `airflow.yaml`: Configuración para desplegar Apache Airflow.
-  - `airflow-operator.yaml`: Configuración del operador de Airflow.
-  - `events-svc.yaml`: Configuración del servicio de eventos.
-  - `ueransim-gnb.yaml`: Simulador UERANSIM para nodos gNB.
   - `main.yaml`: Archivo principal de configuración.
 
 ---
 
 ## Procedimiento
 
-### **Creación de un Clúster de Gemelo Digital (DT):**
+### **Creación de un Gemelo Digital (DT):**
 
 1. **Clonar el repositorio y crear una rama:**
    - Navega al repositorio `deployment-digital-twins`.
