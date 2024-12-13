@@ -79,3 +79,9 @@ El objetivo principal de este repositorio es:
 ---
 
 Este repositorio es mantenido como parte del proyecto **5G+TACTILE**.
+
+---
+
+## Licencia
+
+Este projecto es licenciado bajo [Apache](LICENSE)
