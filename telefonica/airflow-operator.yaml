@@ -1,23 +1,23 @@
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: airflow-operator
-  namespace: argocd
-spec:
-  project: digital-twins
-  source:
-    repoURL: 'https://github.com/5gplustactile/tactile-etl-svc.git'
-    targetRevision: main
-    path: 'helms/airflow-operator'
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: 'https://internal-edge-clusters-core5g-apiserver-988246090.eu-west-3.elb.amazonaws.com:6443'
-    namespace: airflow
-  syncPolicy:
-    automated: {}
-    syncOptions:
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
+#---
+#apiVersion: argoproj.io/v1alpha1
+#kind: Application
+#metadata:
+#  name: airflow-operator
+#  namespace: argocd
+#spec:
+#  project: digital-twins
+#  source:
+#    repoURL: 'https://github.com/5gplustactile/tactile-etl-svc.git'
+#    targetRevision: main
+#    path: 'helms/airflow-operator'
+#    helm:
+#      valueFiles:
+#        - values.yaml
+#  destination:
+#    server: 'https://internal-edge-clusters-core5g-apiserver-988246090.eu-west-3.elb.amazonaws.com:6443'
+#    namespace: airflow
+#  syncPolicy:
+#    automated: {}
+#    syncOptions:
+#      - CreateNamespace=true
+#      - ApplyOutOfSyncOnly=true
