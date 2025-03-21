@@ -13,6 +13,19 @@ Open5GS
 | open5gs-upf-gtpu.auto-open5gs.svc.cluster.local | 2152/UDP |
 | open5gs-upf-pfcp.auto-open5gs.svc.cluster.local| 8805/UDP |
 
+| External Endpoint | Ports|
+|----------|----------|
+| http://10.11.29.106:9999/ | 9999/TCP |
+
+```
+# to access to open5gs webui external endpoint, use the jump host and foxiproxy using this ssh config (you must be connected through the ITuser VPN):
+Host tactile5g-telefonica
+  HostName 10.11.29.8
+  ProxyJump pen-socks
+  User labuser
+  DynamicForward 8080
+```
+
 
 Prometheus
 ----------
