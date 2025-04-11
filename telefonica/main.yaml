@@ -1,26 +1,26 @@
 ---
 apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: open5gs
-  namespace: argocd
-spec:
-  project: digital-twins
-  source:
-    repoURL: 'https://github.com/5gplustactile/tactile-open5gs-cn.git'
-    targetRevision: main
-    path: 'open5gs'
-    helm:
-      valueFiles:
-        - ../values/main-values/default-values.yaml
-  destination:
-    server: 'https://internal-edge-clusters-core5g-apiserver-988246090.eu-west-3.elb.amazonaws.com:6443'
-    namespace: auto-open5gs
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
-      - PruneLast=true
+#kind: Application
+#metadata:
+#  name: open5gs
+#  namespace: argocd
+#spec:
+#  project: digital-twins
+#  source:
+#    repoURL: 'https://github.com/5gplustactile/tactile-open5gs-cn.git'
+#    targetRevision: main
+#    path: 'open5gs'
+#    helm:
+#      valueFiles:
+#        - ../values/main-values/default-values.yaml
+#  destination:
+#    server: 'https://internal-edge-clusters-core5g-apiserver-988246090.eu-west-3.elb.amazonaws.com:6443'
+#    namespace: auto-open5gs
+#  syncPolicy:
+#    automated:
+#      prune: true
+#      selfHeal: true
+#    syncOptions:
+#      - CreateNamespace=true
+#      - ApplyOutOfSyncOnly=true
+#      - PruneLast=true
