@@ -1,26 +1,26 @@
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: ueransim-gnb
-  namespace: argocd
-spec:
-  project: digital-twins
-  source:
-    repoURL: 'https://github.com/5gplustactile/tactile-open5gs-cn.git'
-    targetRevision: main
-    path: 'ueransim-gnb'
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: 'https://internal-edge-clusters-core5g-apiserver-988246090.eu-west-3.elb.amazonaws.com:6443'
-    namespace: ueransim-gnb
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
-      - PruneLast=true
+#---
+#apiVersion: argoproj.io/v1alpha1
+#kind: Application
+#metadata:
+#  name: ueransim-gnb
+#  namespace: argocd
+#spec:
+#  project: digital-twins
+#  source:
+#    repoURL: 'https://github.com/5gplustactile/tactile-open5gs-cn.git'
+#    targetRevision: main
+#    path: 'ueransim-gnb'
+#    helm:
+#      valueFiles:
+#        - values.yaml
+#  destination:
+#    server: 'https://internal-edge-clusters-core5g-apiserver-988246090.eu-west-3.elb.amazonaws.com:6443'
+#    namespace: ueransim-gnb
+#  syncPolicy:
+#    automated:
+#      prune: true
+#      selfHeal: true
+#    syncOptions:
+#      - CreateNamespace=true
+#      - ApplyOutOfSyncOnly=true
+#      - PruneLast=true
